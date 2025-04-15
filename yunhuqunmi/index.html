@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -9,24 +9,53 @@
     <title>云湖群秘后台</title>
 </head>
 
-<body class="bg-gray-100 font-sans">
-    <div class="container mx-auto p-8">
-        <h1 class="text-3xl font-bold mb-4">云湖群秘后台</h1>
-        <div class="bg-white p-6 rounded shadow-md">
-            <textarea id="messageInput" class="w-full p-2 border border-gray-300 rounded mb-4" rows="4"
-                placeholder="输入要发送的消息"></textarea>
-            <select id="contentTypeSelect" class="w-full p-2 border border-gray-300 rounded mb-4">
-                <option value="text">text</option>
-                <option value="image">image</option>
-                <option value="video">video</option>
-                <option value="file">file</option>
-                <option value="markdown">markdown</option>
-                <option value="html">html</option>
-            </select>
-            <button id="sendButton"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">发送消息</button>
+<body class="bg-gray-100 dark:bg-gray-900 font-sans transition-colors duration-200">
+    <div class="container mx-auto p-8 max-w-2xl">
+        <div class="flex items-center mb-8">
+            <i class="fas fa-cloud-moon text-2xl text-blue-500 mr-3"></i>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">云湖群秘后台</h1>
         </div>
-        <div id="responseMessage" class="mt-4"></div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+            <div class="relative mb-6">
+                <textarea 
+                    id="messageInput" 
+                    class="w-full p-4 pr-12 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg 
+                           focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all
+                           dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    rows="4"
+                    placeholder="输入要发送的消息..."></textarea>
+                <i class="fas fa-comment-dots absolute right-4 top-4 text-gray-400 dark:text-gray-500"></i>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="relative">
+                    <select 
+                        id="contentTypeSelect" 
+                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg
+                              appearance-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+                              dark:text-gray-100 transition-all">
+                        <option value="text">文本</option>
+                        <option value="image">图片</option>
+                        <option value="video">视频</option>
+                        <option value="file">文件</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="html">HTML</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 dark:text-gray-500 pointer-events-none"></i>
+                </div>
+                <button 
+                    id="sendButton"
+                    class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-lg
+                           font-medium transition-all transform hover:scale-[1.02] active:scale-95
+                           flex items-center justify-center space-x-2">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>发送消息</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="responseMessage" class="mt-6 p-4 rounded-lg text-sm font-mono transition-all"></div>
     </div>
 
     <script>
@@ -38,12 +67,19 @@
         sendButton.addEventListener('click', async () => {
             const message = messageInput.value;
             const contentType = contentTypeSelect.value;
+            
+            responseMessage.className = 'mt-6 p-4 rounded-lg text-sm font-mono transition-all';
+            
             if (message.trim() === '') {
                 responseMessage.textContent = '请输入要发送的消息';
+                responseMessage.classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-600', 'dark:text-red-400');
                 return;
             }
 
             try {
+                responseMessage.classList.add('bg-blue-100', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
+                responseMessage.textContent = '发送中...';
+
                 const apiUrl = 'https://chat-go.jwzhd.com/open-apis/v1/bot/send?token=dc10ed67e34c444d9f02d5e5633d9e40';
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -51,27 +87,31 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        recvId: "898736513",  // 群ID
-                        recvType: "group",    // 接收对象类型
-                        contentType: contentType,  // 消息类型
+                        recvId: "898736513",
+                        recvType: "group",
+                        contentType: contentType,
                         content: {
-                            text: message  // 内容结构
+                            text: message
                         }
                     })
                 });
 
+                const data = await response.json();
+                responseMessage.classList.remove('bg-blue-100', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
+                
                 if (response.ok) {
-                    const data = await response.json();
-                    responseMessage.textContent = '消息发送成功: ' + JSON.stringify(data);
+                    responseMessage.classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-600', 'dark:text-green-400');
+                    responseMessage.textContent = `✅ 发送成功: ${JSON.stringify(data, null, 2)}`;
                     messageInput.value = '';
                 } else {
-                    responseMessage.textContent = '消息发送失败: ' + response.statusText;
+                    responseMessage.classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-600', 'dark:text-red-400');
+                    responseMessage.textContent = `❌ 发送失败: ${response.statusText} - ${JSON.stringify(data)}`;
                 }
             } catch (error) {
-                responseMessage.textContent = '发生错误: ' + error.message;
+                responseMessage.classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-600', 'dark:text-red-400');
+                responseMessage.textContent = `⚠️ 请求错误: ${error.message}`;
             }
         });
     </script>
 </body>
-
 </html>
