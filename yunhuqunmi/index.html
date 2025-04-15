@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <title>云湖群秘后台</title>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-4">云湖群秘后台</h1>
+        <div class="bg-white p-6 rounded shadow-md">
+            <textarea id="messageInput" class="w-full p-2 border border-gray-300 rounded mb-4" rows="4"
+                placeholder="输入要发送的消息"></textarea>
+            <button id="sendButton"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">发送消息</button>
+        </div>
+        <div id="responseMessage" class="mt-4"></div>
+    </div>
+
+    <script>
+        const sendButton = document.getElementById('sendButton');
+        const messageInput = document.getElementById('messageInput');
+        const responseMessage = document.getElementById('responseMessage');
+
+        sendButton.addEventListener('click', async () => {
+            const message = messageInput.value;
+            if (message.trim() === '') {
+                responseMessage.textContent = '请输入要发送的消息';
+                return;
+            }
+
+            try {
+                const apiUrl = 'https://chat-go.jwzhd.com/open-apis/v1/bot/send?token=dc10ed67e34c444d9f02d5e5633d9e40';
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    responseMessage.textContent = '消息发送成功: ' + JSON.stringify(data);
+                    messageInput.value = '';
+                } else {
+                    responseMessage.textContent = '消息发送失败: ' + response.statusText;
+                }
+            } catch (error) {
+                responseMessage.textContent = '发生错误: ' + error.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
+    
