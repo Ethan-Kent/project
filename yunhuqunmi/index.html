@@ -40,15 +40,28 @@
                     </select>
                     <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 dark:text-gray-500 pointer-events-none"></i>
                 </div>
-                <button 
-                    id="sendButton"
-                    class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-lg
-                           font-medium transition-all transform hover:scale-[1.02] active:scale-95
-                           flex items-center justify-center space-x-2">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>发送消息</span>
-                </button>
+                <div class="relative">
+                    <select 
+                        id="groupSelect" 
+                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg
+                              appearance-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+                              dark:text-gray-100 transition-all">
+                        <option value="646936395">自用群</option>
+                        <option value="898736513">体验内测群</option>
+                        <option value="709200314">消遣APP群</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-4 top-4 text-gray-400 dark:text-gray-500 pointer-events-none"></i>
+                </div>
             </div>
+
+            <button 
+                id="sendButton"
+                class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-6 py-3 rounded-lg
+                       font-medium transition-all transform hover:scale-[1.02] active:scale-95
+                       flex items-center justify-center space-x-2">
+                <i class="fas fa-paper-plane"></i>
+                <span>发送消息</span>
+            </button>
         </div>
 
         <div id="responseMessage" class="mt-6 p-4 rounded-lg text-sm font-mono transition-all"></div>
@@ -59,10 +72,12 @@
         const messageInput = document.getElementById('messageInput');
         const responseMessage = document.getElementById('responseMessage');
         const contentTypeSelect = document.getElementById('contentTypeSelect');
+        const groupSelect = document.getElementById('groupSelect');
 
         sendButton.addEventListener('click', async () => {
             const message = messageInput.value;
             const contentType = contentTypeSelect.value;
+            const groupId = groupSelect.value;
             
             responseMessage.className = 'mt-6 p-4 rounded-lg text-sm font-mono transition-all';
             
@@ -83,7 +98,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        recvId: "898736513",
+                        recvId: groupId,
                         recvType: "group",
                         contentType: contentType,
                         content: {
@@ -111,3 +126,4 @@
     </script>
 </body>
 </html>
+    
